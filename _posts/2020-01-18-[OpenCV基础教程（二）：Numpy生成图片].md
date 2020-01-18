@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '[比赛记录-01：2020-1-15]'
+title: '[OpenCV基础教程（二）：Numpy生成图片]'
 date: 2020-01-17
 author: Qizhiguo
 cover: 

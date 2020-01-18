@@ -1,7 +1,7 @@
 ---
 layout: post
 title: '[OpenCV基础教程（二）：Numpy生成图片]'
-date: 2020-01-17
+date: 2020-01-18
 author: Qizhiguo
 cover: 
 tags: OpenCV

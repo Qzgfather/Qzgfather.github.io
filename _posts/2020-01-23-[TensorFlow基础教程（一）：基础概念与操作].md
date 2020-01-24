@@ -9,7 +9,7 @@ tags: TensorFlow
 
 # [TensorFlow基础教程（一）：基础概念与操作]
 
-## Tensorflow介绍
+## 1、Tensorflow介绍
 
    TensorFlow 2.0 网站将该项目描述为“端到端开源机器学习平台”。实际上 TensorFlow 已进化成为一个更全面的“工具、库和社区资源生态系统”，可帮助研究人员构建和部署人工智能助力的应用。
 TensorFlow 2.0 有四大组成部分：
@@ -20,18 +20,18 @@ TensorFlow 2.0 有四大组成部分：
 - TensorFlow Extended，一个在大型生产环境中准备数据、训练、验证和部署模型的平台。
 
 TensorFlow 2.0 生态系统包括对 Python、JavaScript 和 Swift 的支持，以及对云、浏览器和边缘设备的部署支持。TensorBoard（可视化）和 TensorFlow Hub（模型库）都是很有用的工具。TensorFlow Extended（TFX）则支持端到端生产流水线。[参考](http://baijiahao.baidu.com/sid=1640756159447567798&wfr=spider&for=pc)
-## 为什么会有这个？
-   Tensorflow2.0现在已经发布，相比1.x版本有很多显著的改善，作为深度学习新手。tensorflow2.0更加简单上手，本教程[参考](https://github.com/czy36mengfei/tensorflow2_tutorials_chinese)里面的代码对我来说较难理解我对里面的代码进行复现和进一步的讲解，对新手更加友好，如果自己水平有所提升可以参考原教程。
+## 2、Keras有什么优点：
 
+### 2.1更简洁
 
-## 更简洁——Keras
    keras原本是独立于Tensorflow的高级API可以实现跨平台的模型部署，其后端可以是tensorflow。谷歌将Keras收购后，作为其官方的API并入到Tensorflow2.0中，tf.keras与keras并不完全相同（import keras ≠ from tensorflow import keras）独立的keras在以后将逐渐淡出人们的视野。
 
-## tf.keras 可以运行任何与 Keras 兼容的代码，但请注意：
-最新版 TensorFlow 中的 tf.keras 版本可能与 PyPI 中的最新 keras 版本不同。请查看 tf.keras.version。
-保存模型的权重时，tf.keras 默认采用检查点格式。请传递 save_format='h5' 以使用 HDF5。[官方介绍](https://tensorflow.google.cn/guide/keras)
+### 2.2兼容Keras
+​        最新版 TensorFlow 中的 tf.keras 版本可能与 PyPI 中的最新 keras 版本不同。请查看 tf.keras.version。保存模型的权重时，tf.keras 默认采用检查点格式。请传递 save_format='h5' 以使用 HDF5，请在保存模型的时候使用h5格式的文件来保存模型。[官方介绍](https://tensorflow.google.cn/guide/keras)
 
-## 导入keras
+
+### 2.3更灵活
+​		如果接触过pytorch，相比pytorch，发现tensorflow 1.x版本过于复杂，比如计算图的定义，会话的定义。在tensorflow 2.0版本中更加方便的应用，TensorFlow2.x可以更快速的搭建神经网络，你只需要调用几个api就可以搭建一个模型，同时如果你想自定义其中的组成部分的时候，也可以快速的构建自己的优化器、损失函数等。
 
 
 ```python
@@ -39,17 +39,7 @@ import tensorflow as tf
 from tensorflow import keras
 print(tf.__version__)
 print(keras.__version__)
-```
 
-    2.0.0-rc1
-    2.2.4-tf
-
-
-## 更方便
-   如果接触过pytorch，相比pytorch，发现tensorflow 1.x版本过于复杂，比如计算图的定义，会话的定义。在tensorflow 2.0版本中更加方便的应用。
-
-
-```python
 variable1 = tf.constant(3)
 variable2 = tf.constant(2)
 
@@ -62,15 +52,26 @@ tf.Tensor(5, shape=(), dtype=int32)
 ```
 
 
-## 1一般网络的配置
-   tensorflow 2.0使用keras可以堆叠式的建立模型。一般分为四个步骤：
-- 1.网络的定义
-- 2.模型的编译
-- 3.喂入数据
-- 4.定义其他操作（模型的保存，模型参数的可视化）
+## 3、基础结构
+TensorFlow在定义模型的时候有很多种方法，第一种是堆叠式，就是把要用的神经网络层，直接堆叠起来，模型自动计算输出tensor的形状，并进行计算。  
 
- ## 1.1生成数据
- 在建立模型之前，一般会对所要训练的数据进行整理。
+**1. 堆叠式**
+
+**2. 函数式**
+
+**3. 自定义式**
+
+堆叠式模型一般分为五个步骤：
+
+- **数据处理**
+
+- **网络的定义**
+- **模型的编译**
+- **喂入数据**
+- **定义其他操作（模型的保存，模型参数的可视化）**
+
+ ## 2.1数据处理
+​        深度学习需要大量的数据，在进行模型搭建之前一定要对数据进行充分的分析，并对数据进行相关操作然后再去建立合适的模型进行训练，这里我们生成（1000,72）的随机数矩阵作为训练集，同时生成一个（1000,10）的训练集标签，以此类推生成测试集，我们为了简单生成随机数当做训练集，在现实情况中，数据一般都是有规律的，我们就是使用TensorFlow寻找这个规律。
 
 
 ```python
@@ -83,7 +84,7 @@ val_x = np.random.random((200, 72))
 val_y = np.random.random((200, 10))
 ```
 
-## 1.2设置训练流程
+## 2.2模型训练
 在 Keras 中，您可以通过组合层来构建模型。模型（通常）是由层构成的图。最常见的模型类型是层的堆叠：tf.keras.Sequential 模型。
 
 
@@ -144,7 +145,7 @@ model.summary()
     _________________________________________________________________
 
 
-## 1.3API介绍
+## 2.3API介绍
 ### tf.keras.Sequential():初始化模型，可以传入参数，也可以不传入，传入的参数是一个包含layer的列表。
 ### tf.keras.layers.Dense():定义全连接层，运算逻辑：Y = W·X+b，  
 - **activation**：要使用的激活函数。如果您未指定任何内容，则不会应用任何激活（即“线性”激活：）a(x) = x，
@@ -175,15 +176,43 @@ MSE|'mse'|tf.keras.losses.mean_squared_error,tf.keras.losses.mse,tf.keras.metric
 mae|'mae'|tf.losses.MAE,tf.losses.mae,tf.losses.mean_absolute_error
 
 ### tf.keras.Model.fit()：喂入数据。
+
+```python
+ fit(self,
+          model,
+          x=None,
+          y=None,
+          batch_size=None,
+          epochs=1,
+          verbose=1,
+          callbacks=None,
+          validation_split=0.,
+          validation_data=None,
+          shuffle=True,
+          class_weight=None,
+          sample_weight=None,
+          initial_epoch=0,
+          steps_per_epoch=None,
+          validation_steps=None,
+          validation_freq=1,
+          **kwargs):
+```
+
+
+
 - **epochs**：以周期为单位进行训练。一个周期是对整个输入数据的一次迭代（以较小的批次完成迭代）。
 - **batch_size**：当传递 NumPy 数据时，模型将数据分成较小的批次，并在训练期间迭代这些批次。此整数指定每个批次的大小。请注意，如果样本总数不能被批次大小整除，则最后一个批次可能更小。
 - **validation_data**：在对模型进行原型设计时，可以轻松监控该模型在某些验证数据上达到的效果。输入此参数（输入和标签元组）可以让该模型在每个周期结束时显示所传递数据的损失和指标。
+- **validation_split**：对训练集进行划分取值0到1，比如取0.2的时候将20%的数据当作测试集。
+- **callbacks**：一个比较重要的参数，如果想可视化或者保存模型，需要构建一个callbacks列表，然后传入fit中。
+- **shuffle**：是否打乱数据，默认是打乱数据。
 
 ### 其他喂入数据的方法：tf.data.Dataset
 
-
-
 ```python
+import tensorflow as tf
+from tensorflow import keras
+
 # 1 定义网络
 model = tf.keras.Sequential()
 model.add(tf.keras.layers.Dense(32, activation='relu'))
@@ -199,6 +228,7 @@ model.compile(optimizer=tf.keras.optimizers.Adam(0.001),
 
 dataset = tf.data.Dataset.from_tensor_slices((train_x, train_y)) # 生成一个数据
 dataset = dataset.batch(100)
+# repeat()将数据集进行重复，如果不传入参数将不停的进行重复
 dataset = dataset.repeat()
 print(dataset)
 
@@ -256,26 +286,22 @@ model.summary()
 
 ### 注意：一般在进行批次训练时经常有三个参数容易弄混：
 - 批大小：batch_size,默认32
-- 训练轮数：epochs，
+- 训练轮数：epochs
 - 批个数：steps_per_epoch，steps_per_epoch=总样本数（all_samples) / 批大小(batch_size）
 
 现在用的优化器SGD是stochastic gradient descent的缩写，但不代表是一个样本就更新一回，还是基于mini-batch的。
-那 batch epoch iteration代表什么呢？
-- （1）batchsize：批大小。在深度学习中，一般采用SGD训练，即每次训练在训练集中取batchsize个样本训练；
-- （2）iteration：1个iteration等于使用batchsize个样本训练一次；
-- （3）epoch：1个epoch等于使用训练集中的全部样本训练一次，通俗的讲epoch的值就是整个数据集被轮几次。
+那 batch、epoch、 iteration代表什么呢？
+
+- batchsize：批大小。在深度学习中，一般采用SGD训练，即每次训练在训练集中取batchsize个样本训练；
+- iteration：1个iteration等于使用batchsize个样本训练一次；
+- epoch：1个epoch等于使用训练集中的全部样本训练一次，通俗的讲epoch的值就是整个数据集被轮几次。
 
 比如训练集有500个样本，batchsize = 10 ，那么训练完整个样本集：iteration=50，epoch=1.
 
-作者：bboysky45 
-来源：CSDN 
-原文：https://blog.csdn.net/qq_18668137/article/details/80883350 
-版权声明：本文为博主原创文章，转载请附上博文链接！
-
 官方网站上，阐述了 repeat 在 shuffle 之前使用可以有效提高性能，但是模糊了数据样本的 epoch 实际上，可以这样理解shuffle取之前已经重置了源数据集， 即先repeat，后shuffle。tf会将数据集乘以repeat次数，然后整个打乱一次，把它当作一个数据集。
 
-## 1.4模型的评估与预测
-训练好模型后可以对模型进行评估,使用的API时是：model.evaluate()
+## 2.4模型的评估与预测
+训练好模型后可以对模型进行评估,使用的API时是：**model.evaluate()**
 
 
 ```python
@@ -290,8 +316,6 @@ model.evaluate(test_data, steps=30)
     30/30 [==============================] - 0s 9ms/step - loss: 72.8322 - categorical_accuracy: 0.0979
     
     [72.8322021484375, 0.09791667]
-
-
 
 
 ```python
@@ -313,14 +337,3 @@ print(result)
       4.2529877e-09 5.0028716e-04]
      [6.1346550e-04 7.8577131e-07 3.4149053e-19 ... 7.8434672e-12
       5.0080353e-09 5.5151404e-04]]
-
-
-
-```python
-
-```
-
-
-```python
-
-```

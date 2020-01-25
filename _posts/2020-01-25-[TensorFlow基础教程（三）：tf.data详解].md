@@ -11,11 +11,13 @@ tags: TensorFlow
 
    借助 tf.data API，可以根据简单的可重用片段构建复杂的输入管道。例如，图片模型的管道可能会汇聚分布式文件系统中的文件中的数据、对每个图片应用随机扰动，并将随机选择的图片合并成用于训练的批次。文本模型的管道可能包括从原始文本数据中提取符号、根据对照表将其转换为嵌入标识符，以及将不同长度的序列组合成批次数据。使用 tf.data API 可以轻松处理大量数据、不同的数据格式以及复杂的转换。
 
+**我们还是建议使用tf,data对数据进行处理，结合map函数对数据进行处理和操作。**
+
 tf.data API 在 TensorFlow 中引入了两个新的抽象类：
 
-- tf.data.Dataset 表示一系列元素，其中每个元素包含一个或多个 Tensor 对象。例如，在图像管道中，元素可能是单个训练样本，具有一对表示图像数据和标签的张量。可以通过两种不同的方式来创建数据集：
+- tf.data.Dataset 表示一系列元素，其中每个元素包含一个或多个 Tensor 对象。例如，在图像管道中，元素可能是单个训练样本，具有一对表示图像数据和标签的张量，可以通过两种不同的方式来创建数据集：
 
- - 创建来源（例如 **Dataset.from_tensor_slices()**，）通过一个或多个 tf.Tensor 对象构建数据集。(常用) 
+ - 创建来源（例如 **Dataset.from_tensor_slices()**，）通过一个或多个 tf.Tensor 对象构建数据集。
 
  - 应用转换（例如 **Dataset.batch()**），以通过一个或多个 tf.data.Dataset 对象构建数据集。对数据打包形成一个批次。
 
@@ -35,8 +37,6 @@ from tensorflow.keras import layers
 
     Downloading data from https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz
     11493376/11490434 [==============================] - 2s 0us/step
-
-
 
 ```python
 # 模型构造
@@ -81,62 +81,32 @@ print(history.history)
 
 
 ## 基本机制
-本指南的这一部分介绍了创建不同种类的 Dataset 和 Iterator 对象的基础知识，以及如何从这些对象中提取数据。
+​		本指南的这一部分介绍了创建不同种类的 Dataset 和 Iterator 对象的基础知识，以及如何从这些对象中提取数据。
 
-要启动输入管道，您必须定义来源。例如，要通过内存中的某些张量构建 Dataset，您可以使用 tf.data.Dataset.from_tensors() 或 tf.data.Dataset.from_tensor_slices()。或者，如果输入数据以推荐的 TFRecord 格式存储在磁盘上，那么您可以构建 tf.data.TFRecordDataset。
+​		要启动输入管道，您必须定义来源。例如，要通过内存中的某些张量构建 Dataset，您可以使用 tf.data.Dataset.from_tensors() 或 tf.data.Dataset.from_tensor_slices()。如果输入数据是 TFRecord 格式存储在磁盘上，那么你可以构建 tf.data.TFRecordDataset，读取数据。**而且我建议使用TFRecord 格式文件来进行储存，比如10个TFRecord 格式文件要比一万张图片操作起来要简单的多。**
 
-一旦有了 Dataset 对象，可以将其转换为新的 Dataset，方法是链接 tf.data.Dataset 对象上的方法调用。例如，您可以应用单元素转换，例如 Dataset.map()（为每个元素应用一个函数），也可以应用多元素转换（例如 Dataset.batch()）。要了解转换的完整列表，请参阅 tf.data.Dataset 的文档。
-
-消耗 Dataset 中值的最常见方法是构建迭代器对象。通过此对象，可以一次访问数据集中的一个元素（例如通过调用 Dataset.make_one_shot_iterator()）。tf.data.Iterator 提供了两个操作：Iterator.initializer，您可以通过此操作（重新）初始化迭代器的状态；以及 Iterator.get_next()，此操作返回对应于有符号下一个元素的 tf.Tensor 对象。根据您的使用情形，您可以选择不同类型的迭代器，下文介绍了具体选项。
-
-
-```python
-dataset = tf.data.Dataset.range(100)
-iterator = dataset.make_one_shot_iterator()
-next_element = iterator.get_next()
-
-for i in range(100):
-  value = sess.run(next_element)
-  assert i == value
-```
-
-
-    ---------------------------------------------------------------------------
-    
-    AttributeError                            Traceback (most recent call last)
-    
-    <ipython-input-7-04c63af7ff4e> in <module>
-          1 dataset = tf.data.Dataset.range(100)
-    ----> 2 iterator = dataset.make_one_shot_iterator()
-          3 next_element = iterator.get_next()
-          4 
-          5 for i in range(100):
-
-
-    AttributeError: 'RangeDataset' object has no attribute 'make_one_shot_iterator'
+一旦有了 Dataset 对象，你就可以更方便的进行操作，比如使用map函数，对数据集中的图像进行裁剪、旋转等操作。
 
 
 ## 1.读取Numpy数据
-如果您的所有输入数据都适合存储在内存中，则根据输入数据创建 Dataset 的最简单方法是将它们转换为 tf.Tensor 对象，并使用 Dataset.from_tensor_slices()。
+如果您的所有输入数据都适合存储在内存中，则根据输入数据创建 Dataset 的最简单方法是将它们转换为 tf.Tensor 对象，并使用 Dataset.from_tensor_slices()，将其转换为dateset对象，进行下一步的操作。
 
 
 ```python
-# 读取numpy数据
-with np.load("/var/data/training_data.npy") as data:
-  features = data["features"]
-  labels = data["labels"]
+import tensorflow as tf
+import numpy as np
 
-# Assume that each row of `features` corresponds to the same row as `labels`.
-assert features.shape[0] == labels.shape[0]
-
-dataset = tf.data.Dataset.from_tensor_slices((features, labels))
+# 随机生成numpy数据。
+x_train = np.random.rand(500, 3)
+x_labels = np.random.rand(500, 1)
+dataset = tf.data.Dataset.from_tensor_slices((x_train, x_labels))
+print(dataset)
 ```
 
-**请注意，上面的代码段会将 features 和 labels 数组作为 tf.constant() 指令嵌入在 TensorFlow 图中。这样非常适合小型数据集，但会浪费内存，因为会多次复制数组的内容，并可能会达到 tf.GraphDef 协议缓冲区的 2GB 上限。
-作为替代方案，您可以根据 tf.placeholder() 张量定义 Dataset，并在对数据集初始化 Iterator 时馈送 NumPy 数组。**
+**请注意：上面的代码段会将 features 和 labels 数组作为 tf.constant() 指令嵌入在 TensorFlow 图中。这样非常适合小型数据集，但会浪费内存，因为会多次复制数组的内容，并可能会达到 tf.GraphDef 协议缓冲区的 2GB 上限。**
 
 ## 2.读取 TFRecord 数据
-tf.data API 支持多种文件格式，因此可以处理那些不适合存储在内存中的大型数据集。例如，TFRecord 文件格式是一种面向记录的简单二进制格式，很多 TensorFlow 应用采用此格式来训练数据。通过 tf.data.TFRecordDataset 类，您可以将一个或多个 TFRecord 文件的内容作为输入管道的一部分进行流式传输。
+tf.data API 支持多种文件格式，因此可以处理那些不适合存储在内存中的大型数据集。例如，TFRecord 文件格式是一种面向记录的简单**二进制格式**，很多 TensorFlow 应用采用此格式来训练数据。通过 tf.data.TFRecordDataset 类，可以将一个或多个 TFRecord 文件的内容作为输入管道的一部分进行流式传输。
 
 
 ```python
@@ -145,10 +115,10 @@ filenames = ["/var/data/file1.tfrecord", "/var/data/file2.tfrecord"]
 dataset = tf.data.TFRecordDataset(filenames)
 ```
 
-TFRecordDataset 初始化程序的 filenames 参数可以是字符串、字符串列表，也可以是字符串 tf.Tensor。因此，如果您有两组分别用于训练和验证的文件，则可以使用 tf.placeholder(tf.string) 来表示文件名，并使用适当的文件名初始化迭代器：
+TFRecordDataset **初始化程序的 filenames 参数可以是字符串、字符串列表，也可以是字符串 tf.Tensor。**具体如何生成 TFRecord 数据我们在数据结构化中详细介绍。
 
 ## 3.读取文本数据
-很多数据集都是作为一个或多个文本文件分布的。tf.data.TextLineDataset 提供了一种从一个或多个文本文件中提取行的简单方法。给定一个或多个文件名，TextLineDataset 会为这些文件的每行生成一个字符串值元素。像 TFRecordDataset 一样，TextLineDataset 将接受 filenames（作为 tf.Tensor），因此您可以通过传递 tf.placeholder(tf.string) 进行参数化。
+​		很多数据集都是作为一个或多个文本文件分布的。tf.data.TextLineDataset 提供了一种从一个或多个文本文件中提取行的简单方法。给定一个或多个文件名，**TextLineDataset 会为这些文件的每行生成一个字符串值元素。**像 TFRecordDataset 一样，TextLineDataset 将接受 filenames（作为 tf.Tensor）。
 
 
 ```python
@@ -157,14 +127,32 @@ dataset = tf.data.TextLineDataset(filenames)
 print(dataset)
 ```
 
-    <TextLineDatasetV2 shapes: (), types: tf.string>
-
-
 ## 4.预设api读取数据
-![cifar-10](./images/dataset.png)
 
-## 4.使用 Dataset.map() 预处理数据
-Dataset.map(f) 转换通过将指定函数 f 应用于输入数据集的每个元素来生成新数据集。此转换基于 map() 函数（通常应用于函数式编程语言中的列表和其他结构）。函数 f 会接受表示输入中单个元素的 tf.Tensor 对象，并返回表示新数据集中单个元素的 tf.Tensor 对象。此函数的实现使用标准的 TensorFlow 指令将一个元素转换为另一个元素。
+TensorFlow2.0内置了常用数据集的下载以及数据处理脚本，我们只需要一行代码就可以下载=处理并返回处理好的数据，数据集有：boston_housing、cifar10、import cifar100、fashion_mnist。
+
+以cifar10数据集为例，我们使用tensorflow.keras.datasets.mnist.load_data()就可以返回训练集及其标签和测试集以及其标签，返回的是int8型的numpy数组数据。
+
+```python
+from tensorflow.keras import datasets
+(train, train_labels), (test, test_labels) = datasets.mnist.load_data()
+print('train_shape: {0},'
+      'train_labels_shape: {1}, '
+      'test_shape: {2}, '
+      'test_labels_shap:{3}.'.format(train.shape,  train_labels.shape, test.shape,  test_labels.shape))
+```
+
+```python
+train_shape: (60000, 28, 28),
+train_labels_shape: (60000,),
+test_shape: (10000, 28, 28), 
+test_labels_shap:(10000,).
+```
+
+## 5.使用 Dataset.map() 预处理数据
+**Dataset.map(f) 转换通过将指定函数 f 应用于输入数据集的每个元素来生成新数据集。此转换基于 map() 函数**（通常应用于函数式编程语言中的列表和其他结构）。函数 f 会接受表示输入中单个元素的 tf.Tensor 对象，并返回表示新数据集中单个元素的 tf.Tensor 对象。此函数的实现使用标准的 TensorFlow 指令将一个元素转换为另一个元素。
+
+在读取图片作为训练数据的时候，可以建立一个文件包含所有图片的路径的字符串集合，使用
 
 
 ```python

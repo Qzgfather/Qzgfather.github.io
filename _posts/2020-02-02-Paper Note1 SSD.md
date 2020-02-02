@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Paper Note 1 <SSD: Single Shot MultiBox Detector>'
+title: 'Paper Note 1: SSD: Single Shot MultiBox Detector'
 date: 2020-02-02
 author: Qizhiguo
 cover: 

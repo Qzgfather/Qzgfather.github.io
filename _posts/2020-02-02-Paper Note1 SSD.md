@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Paper Note 1 <SSD: Single Shot MultiBox Detector>'
-date: 2020-01-20
+date: 2020-02-02
 author: Qizhiguo
 cover: 
 tags: PaperNote

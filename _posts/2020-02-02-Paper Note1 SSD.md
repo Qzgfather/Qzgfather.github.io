@@ -1,10 +1,10 @@
 ---
 layout: post
-title: 'Paper Note 1：<SSD: Single Shot MultiBox Detector>'
+title: 'Paper Note 1 <SSD: Single Shot MultiBox Detector>'
 date: 2020-01-20
 author: Qizhiguo
 cover: 
-tags: Paper Note
+tags: PaperNote
 ---
 
 # Paper Note 1：<SSD: Single Shot MultiBox Detector>

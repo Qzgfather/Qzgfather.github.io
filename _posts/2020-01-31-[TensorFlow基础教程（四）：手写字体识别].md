@@ -1,7 +1,7 @@
 ---
 layout: post
 title: '[TensorFlow基础教程（四）：手写字体识别]'
-date: 2020-01-20
+date: 2020-01-31
 author: Qizhiguo
 cover: 
 tags: TensorFlow

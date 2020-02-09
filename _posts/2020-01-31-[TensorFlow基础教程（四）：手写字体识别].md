@@ -1,4 +1,13 @@
-# 1.MNIST数据集介绍
+---
+layout: post
+title: '[TensorFlow基础教程（四）：手写字体识别]'
+date: 2020-01-20
+author: Qizhiguo
+cover: 
+tags: TensorFlow
+---
+# [TensorFlow基础教程（四）：手写字体识别]
+## 1.MNIST数据集介绍
 MNIST 数据集来自美国国家标准与技术研究所, National Institute of Standards and Technology (NIST). 训练集 (training set) 由来自 250 个不同人手写的数字构成, 其中 50% 是高中学生, 50% 来自人口普查局 (the Census Bureau) 的工作人员. 测试集(test set) 也是同样比例的手写数字数据.
 
 这一节我将介绍不同的实现方法，以后遇到的不同的代码风格可以进行分辨。

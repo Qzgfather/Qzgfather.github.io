@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '2020-02-10-[TensorFlow基础教程（六）：卷进神经网络初识]'
+title: '[TensorFlow基础教程（六）：卷进神经网络初识]'
 date: 2020-02-10
 author: Qizhiguo
 cover: 

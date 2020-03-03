@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '2020-03-03-[TensorFlow基础教程（七）：TPU基础]'
+title: '[TensorFlow基础教程（七）：TPU基础]'
 date: 2020-03-03
 author: Qizhiguo
 cover: 
